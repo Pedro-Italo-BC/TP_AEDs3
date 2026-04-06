@@ -1,6 +1,8 @@
 import java.util.*;
 public class Principal {
     public static void main(String[] args) {
+        Usuario usuario = new Usuario();
+
         Scanner sc = new Scanner(System.in);
         int s=0;
         String aux = "";
@@ -18,17 +20,28 @@ public class Principal {
             System.out.println();
             aux = sc.next();
             opcao = aux.charAt(0);
+
+            //sair
             if(opcao ==  'S'){
                 s=1;
                 break;
-            } else if(opcao == 'A'){
+            } 
+            
+            //logar
+            else if(opcao == 'A'){
                 System.out.print("Digite seu email: ");
                 String email = sc.next();
 
                 System.out.print("Digite sua senha: ");
                 String senha = sc.next();
                 System.out.println();
+                Usuario u = usuario.logar(email, senha);
+                if(u != null){
+                    //próximo menu
+                    
+                }
 
+            //cadastrar
             } else if(opcao == 'B'){
 
                 System.out.print("Digite seu nome: ");
@@ -77,6 +90,8 @@ public class Principal {
                 System.out.println();
                 if(desejo2 == 'S') System.out.println("Cadastro realizado com sucesso!");
                 else if(desejo2 == 'N') break;
+
+                usuario.cadastrar(nome, email, senha, perguntaSecreta, respostaSecreta);
 
 
             } else{

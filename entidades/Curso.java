@@ -1,7 +1,7 @@
 package entidades;
 
-public class Usuario  {
-    private int idUsuario;
+public class Curso  {
+    private int idCurso;
     private String nome;
     private String email;
     private String hashSenha; 
