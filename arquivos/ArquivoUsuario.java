@@ -1,7 +1,7 @@
 package arquivos;
 
-import java.io.*;
 import entidades.Usuario;
+import java.io.*;
 
 public class ArquivoUsuario {
 
@@ -64,4 +64,82 @@ public class ArquivoUsuario {
 
         return null;
     }
+
+    //READ
+    public Usuario read(int id) throws Exception {
+        arq.seek(TAM_CABECALHO);
+
+        while (arq.getFilePointer() < arq.length()) {
+
+            byte lapide = arq.readByte();
+            short tam = arq.readShort();
+
+            if (lapide != '*') {
+                byte[] ba = new byte[tam];
+                arq.readFully(ba);
+
+                Usuario u = new Usuario();
+                u.fromByteArray(ba);
+
+                if (u.getIdUsuario() == id) {
+                    return u;
+                }
+
+            } else {
+                arq.skipBytes(tam);
+            }
+        }
+
+        return null;
+    }
+
+    //Update
+    /*public boolean update(Usuario novo) throws Exception {
+        arq.seek(TAM_CABECALHO);
+
+        while (arq.getFilePointer() < arq.length()) {
+
+            long pos = arq.getFilePointer();
+
+            byte lapide = arq.readByte();
+            short tam = arq.readShort();
+
+            if (lapide != '*') {
+
+                byte[] ba = new byte[tam];
+                arq.readFully(ba);
+
+                Usuario atual = new Usuario();
+                atual.fromByteArray(ba);
+
+                if (atual.getIdUsuario() == novo.getIdUsuario()) {
+
+                    byte[] novoBa = novo.toByteArray();
+
+                    if (novoBa.length <= tam) {
+                        // sobrescreve no mesmo espaço
+                        arq.seek(pos + 3); // pula lápide + tamanho
+                        arq.write(novoBa);
+                    } else {
+                        // marca antigo como deletado
+                        arq.seek(pos);
+                        arq.writeByte('*');
+
+                        // escreve no final
+                        arq.seek(arq.length());
+                        arq.writeByte(' ');
+                        arq.writeShort(novoBa.length);
+                        arq.write(novoBa);
+                    }
+
+                    return true;
+                }
+
+            } else {
+                arq.skipBytes(tam);
+            }
+        }
+
+        return false;
+    }*/
 }
