@@ -3,30 +3,27 @@ package entidades;
 public class Curso  {
     private int idCurso;
     private String nome;
-    private String email;
-    private String hashSenha; 
-    private String perguntaSecreta;
-    private String hashRespostaSercreta;
+    private LocalDate inicio;
+    private int codigo;
+    private String estado;
 
-    public Usuario() {
+    public Curso() {
 
     }
 
-    public Usuario(int id, String nome, String email, String hashSenha, String perguntaSecreta, String hashRespostaSercreta) {
-        this.idUsuario = id;
+    public Curso(int id, String nome, LocalDate inicio, int codigo, String estado) {
+        this.idCurso = id;
         this.nome = nome;
         this.email = email;
-        this.hashSenha = hashSenha;
-        this.perguntaSecreta = perguntaSecreta;
-        this.hashRespostaSercreta = hashRespostaSercreta;
+        this.codigo = codigo;
+        this.estado = estado;
     }
 
-
-    public int getidUsuario() {
-        return idUsuario;
+    public int getidCurso() {
+        return idCurso;
     }
-    public void setidUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setidCurso(int idCurso) {
+        this.idCurso = idCurso;
     }
     public String getNome() {
         return nome;
@@ -34,75 +31,33 @@ public class Curso  {
     public void setNome(String nome) {
         this.nome = nome;
     }
-    public String getEmail() {
-        return email;
+    public LocalDate getInicio() {
+        return inicio;
     }
-    public void setEmail(String email) {
-        this.email = email;
+    public void setInicio(LocalDate inicio) {
+        this.inicio = inicio;
     }
-    public String getHashSenha() {
-        return hashSenha;
+    public int getCodigo() {
+        return codigo;
     }
-    public void setHashSenha(String hashSenha) {
-        this.hashSenha = hashSenha;
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
     }
-    public String getPerguntaSecreta() {
-        return perguntaSecreta;
+    public String getEstado() {
+        return estado;
     }
-    public void setPerguntaSecreta(String perguntaSecreta) {
-        this.perguntaSecreta = perguntaSecreta;
-    }
-
-    @Override
-    public String toString() {
-        return "Nome: " + nome + 
-               "\nEmail: " + email;
-    }
-
-    public int PegarOHash(String senha){
-
-    }
-
-    public int PegarOHashRespSecreta(String respostaSecreta){
-
-    }
-
-    //logar uma pessoa
-    public Usuario logar(String email, String senha) throws Exception {
-        arq.seek(TAM_CABECALHO);
-        int HashSenha = PegarOHash(senha);
-
-        while (arq.getFilePointer() < arq.length()) {
-            byte lapide = arq.readByte();
-            short tam = arq.readShort();
-
-            if (lapide != '*') {
-                byte[] ba = new byte[tam];
-                arq.readFully(ba);
-
-                Usuario p = new Usuario();
-                p.fromByteArray(ba);
-
-                if (p.email == email && p.hashSenha.compareTo(Hashsenha)){
-                    return p;
-                }
-            } else {
-                arq.skipBytes(tam);
-            }
-        }
-        return null;
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     //cadastrar (create)
-    public static boolean cadastrar(nome, email, senha, perguntaSecreta, respostaSecreta){
-        int hashSenha = PegarOHash(senha);
-        int hashrespostaSecreta = PegarOHashRespSecreta(senha);
+    public static boolean cadastrar(nome, inicio, codigo, estado){
 
         arq.seek(0);
         int ultimoID = arq.readInt();
         int id = ultimoID + 1;
 
-        Usuario p = new Usuario(id, nome, email, hashSenha, perguntaSecreta, hashrespostaSecreta); 
+        Curso p = new Curso(id, nome, inicio, codigo, estado); 
 
         arq.seek(0);
         arq.writeInt(id);
@@ -117,6 +72,31 @@ public class Curso  {
         arq.write(ba);
 
         return id;
+    }
+
+//ler todos (read)
+    public ArrayList<Curso> readAll() throws Exception {
+        ArrayList<Curso> lista = new ArrayList<>();
+
+        arq.seek(TAM_CABECALHO);
+
+        while (arq.getFilePointer() < arq.length()) {
+            byte lapide = arq.readByte();
+            short tam = arq.readShort();
+
+            if (lapide != '*') {
+                byte[] ba = new byte[tam];
+                arq.readFully(ba);
+
+                Curso p = new Curso();
+                p.fromByteArray(ba);
+
+                lista.add(p);
+            } else {
+                arq.skipBytes(tam);
+            }
+        }
+        return lista;
     }
 
 }
