@@ -1,102 +1,100 @@
 package entidades;
 
-public class Curso  {
+import java.time.LocalDate;
+import java.io.*;
+
+public class Curso {
     private int idCurso;
+    private int idUsuario; // relacionamento 1:N
     private String nome;
     private LocalDate inicio;
-    private int codigo;
-    private String estado;
+    private String codigo;
+    private int estado;
 
     public Curso() {
-
     }
 
-    public Curso(int id, String nome, LocalDate inicio, int codigo, String estado) {
-        this.idCurso = id;
+    public Curso(int idCurso, int idUsuario, String nome, LocalDate inicio, String codigo, int estado) {
+        this.idCurso = idCurso;
+        this.idUsuario = idUsuario;
         this.nome = nome;
-        this.email = email;
+        this.inicio = inicio;
         this.codigo = codigo;
         this.estado = estado;
     }
 
-    public int getidCurso() {
+    public int getIdCurso() {
         return idCurso;
     }
-    public void setidCurso(int idCurso) {
+
+    public void setIdCurso(int idCurso) {
         this.idCurso = idCurso;
     }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
+
     public LocalDate getInicio() {
         return inicio;
     }
+
     public void setInicio(LocalDate inicio) {
         this.inicio = inicio;
     }
-    public int getCodigo() {
+
+    public String getCodigo() {
         return codigo;
     }
-    public void setCodigo(int codigo) {
+
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
-    public String getEstado() {
+
+    public int getEstado() {
         return estado;
     }
-    public void setEstado(String estado) {
+
+    public void setEstado(int estado) {
         this.estado = estado;
     }
 
-    //cadastrar (create)
-    public static boolean cadastrar(nome, inicio, codigo, estado){
+    // serialização
+    public byte[] toByteArray() throws IOException {
+        ByteArrayOutputStream ba = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(ba);
 
-        arq.seek(0);
-        int ultimoID = arq.readInt();
-        int id = ultimoID + 1;
+        dos.writeInt(idCurso);
+        dos.writeInt(idUsuario);
+        dos.writeUTF(nome);
+        dos.writeUTF(inicio.toString());
+        dos.writeUTF(codigo);
+        dos.writeInt(estado);
 
-        Curso p = new Curso(id, nome, inicio, codigo, estado); 
-
-        arq.seek(0);
-        arq.writeInt(id);
-
-        p.id = id;
-
-        arq.seek(arq.length());
-        byte[] ba = p.toByteArray();
-
-        arq.writeByte(' ');
-        arq.writeShort(ba.length);
-        arq.write(ba);
-
-        return id;
+        return ba.toByteArray();
     }
 
-//ler todos (read)
-    public ArrayList<Curso> readAll() throws Exception {
-        ArrayList<Curso> lista = new ArrayList<>();
+    public void fromByteArray(byte[] ba) throws IOException {
+        ByteArrayInputStream bi = new ByteArrayInputStream(ba);
+        DataInputStream dis = new DataInputStream(bi);
 
-        arq.seek(TAM_CABECALHO);
-
-        while (arq.getFilePointer() < arq.length()) {
-            byte lapide = arq.readByte();
-            short tam = arq.readShort();
-
-            if (lapide != '*') {
-                byte[] ba = new byte[tam];
-                arq.readFully(ba);
-
-                Curso p = new Curso();
-                p.fromByteArray(ba);
-
-                lista.add(p);
-            } else {
-                arq.skipBytes(tam);
-            }
-        }
-        return lista;
+        idCurso = dis.readInt();
+        idUsuario = dis.readInt();
+        nome = dis.readUTF();
+        inicio = LocalDate.parse(dis.readUTF());
+        codigo = dis.readUTF();
+        estado = dis.readInt();
     }
-
 }
