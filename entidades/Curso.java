@@ -2,11 +2,14 @@ package entidades;
 
 import java.time.LocalDate;
 import java.io.*;
+import java.util.Random;
 
 public class Curso {
+
     private int idCurso;
     private int idUsuario; // relacionamento 1:N
     private String nome;
+    private String descricao;
     private LocalDate inicio;
     private String codigo;
     private int estado;
@@ -14,14 +17,30 @@ public class Curso {
     public Curso() {
     }
 
-    public Curso(int idCurso, int idUsuario, String nome, LocalDate inicio, String codigo, int estado) {
-        this.idCurso = idCurso;
+    public Curso(int idUsuario, String nome, String descricao, LocalDate inicio, int estado) {
         this.idUsuario = idUsuario;
         this.nome = nome;
+        this.descricao = descricao;
         this.inicio = inicio;
-        this.codigo = codigo;
         this.estado = estado;
+        this.codigo = gerarCodigo(); // gera automaticamente
     }
+
+    // 🔹 Geração do código estilo NanoID (10 caracteres)
+    public static String gerarCodigo() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random rand = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            int index = rand.nextInt(chars.length());
+            sb.append(chars.charAt(index));
+        }
+
+        return sb.toString();
+    }
+
+    // GETTERS E SETTERS
 
     public int getIdCurso() {
         return idCurso;
@@ -47,6 +66,14 @@ public class Curso {
         this.nome = nome;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
     public LocalDate getInicio() {
         return inicio;
     }
@@ -59,10 +86,6 @@ public class Curso {
         return codigo;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
     public int getEstado() {
         return estado;
     }
@@ -71,7 +94,8 @@ public class Curso {
         this.estado = estado;
     }
 
-    // serialização
+    // 🔹 SERIALIZAÇÃO
+
     public byte[] toByteArray() throws IOException {
         ByteArrayOutputStream ba = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(ba);
@@ -79,6 +103,7 @@ public class Curso {
         dos.writeInt(idCurso);
         dos.writeInt(idUsuario);
         dos.writeUTF(nome);
+        dos.writeUTF(descricao);
         dos.writeUTF(inicio.toString());
         dos.writeUTF(codigo);
         dos.writeInt(estado);
@@ -93,8 +118,22 @@ public class Curso {
         idCurso = dis.readInt();
         idUsuario = dis.readInt();
         nome = dis.readUTF();
+        descricao = dis.readUTF();
         inicio = LocalDate.parse(dis.readUTF());
         codigo = dis.readUTF();
         estado = dis.readInt();
+    }
+
+    // 🔹 ToString (útil pro debug/menu)
+
+    @Override
+    public String toString() {
+        return "\nID: " + idCurso +
+               "\nUsuário: " + idUsuario +
+               "\nNome: " + nome +
+               "\nDescrição: " + descricao +
+               "\nData de início: " + inicio +
+               "\nCódigo: " + codigo +
+               "\nEstado: " + estado + "\n";
     }
 }
