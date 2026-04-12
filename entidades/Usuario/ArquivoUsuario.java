@@ -1,97 +1,78 @@
-package arquivos;
+package entidades.Usuario;
 
-import entidades.Usuario;
+import aed3.*;
 import java.io.*;
 
-public class ArquivoUsuario {
-
+public class ArquivoUsuario extends Arquivo<Usuario> {
+    
     RandomAccessFile arq;
+    HashExtensivel<ParEmailId> indiceEmail;
     final int TAM_CABECALHO = 4;
 
     public ArquivoUsuario(String nomeArquivo) throws Exception {
-        arq = new RandomAccessFile(nomeArquivo, "rw");
+        super("usuario", Usuario.class.getConstructor());
+        
+    
+        indiceEmail = new HashExtensivel<>(
+            ParEmailId.class.getConstructor(), 
+            TAM_CABECALHO,
+            "./dados/usuario/indiceEmail.d.db",
+            "./dados/usuario/indiceEmail.c.db");
 
-        if (arq.length() < TAM_CABECALHO) {
-            arq.writeInt(0); // último ID
-        }
+     
     }
 
     // CREATE
     public int create(Usuario u) throws Exception {
-        arq.seek(0);
-        int ultimoID = arq.readInt();
-        int novoID = ultimoID + 1;
-        u.setIdUsuario(novoID);
-
-        arq.seek(0);
-        arq.writeInt(novoID);
-
-        arq.seek(arq.length());
-        byte[] ba = u.toByteArray();
-
-        arq.writeByte(' ');
-        arq.writeShort(ba.length);
-        arq.write(ba);
-
-        return novoID;
+        int id = super.create(u);
+        indiceEmail.create(new ParEmailId(u.getEmail(), id));
+        return id;
     }
 
     // LOGIN (busca sequencial por enquanto)
     public Usuario login(String email, String senha) throws Exception {
-        arq.seek(TAM_CABECALHO);
+        ParEmailId pei = indiceEmail.read(Math.abs(email.hashCode()));
+        
+        if(pei == null || !pei.getEmail().equals(email))
+            return null;
+
+        Usuario u = read(pei.getId());
 
         String hash = Usuario.gerarHash(senha);
 
-        while (arq.getFilePointer() < arq.length()) {
-            byte lapide = arq.readByte();
-            short tam = arq.readShort();
-
-            if (lapide != '*') {
-                byte[] ba = new byte[tam];
-                arq.readFully(ba);
-
-                Usuario u = new Usuario();
-                u.fromByteArray(ba);
-
-                if (u.getEmail().equals(email) &&
-                    u.getHashSenha().equals(hash)) {
-                    return u;
-                }
-            } else {
-                arq.skipBytes(tam);
-            }
+        if(u != null && u.getHashSenha().equals(hash)) {
+            return u;
         }
 
         return null;
     }
-
     //READ
-    public Usuario read(int id) throws Exception {
-        arq.seek(TAM_CABECALHO);
+    // public Usuario read(int id) throws Exception {
+    //     arq.seek(TAM_CABECALHO);
 
-        while (arq.getFilePointer() < arq.length()) {
+    //     while (arq.getFilePointer() < arq.length()) {
 
-            byte lapide = arq.readByte();
-            short tam = arq.readShort();
+    //         byte lapide = arq.readByte();
+    //         short tam = arq.readShort();
 
-            if (lapide != '*') {
-                byte[] ba = new byte[tam];
-                arq.readFully(ba);
+    //         if (lapide != '*') {
+    //             byte[] ba = new byte[tam];
+    //             arq.readFully(ba);
 
-                Usuario u = new Usuario();
-                u.fromByteArray(ba);
+    //             Usuario u = new Usuario();
+    //             u.fromByteArray(ba);
 
-                if (u.getIdUsuario() == id) {
-                    return u;
-                }
+    //             if (u.getIdUsuario() == id) {
+    //                 return u;
+    //             }
 
-            } else {
-                arq.skipBytes(tam);
-            }
-        }
+    //         } else {
+    //             arq.skipBytes(tam);
+    //         }
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
 
     //Update
     /*public boolean update(Usuario novo) throws Exception {

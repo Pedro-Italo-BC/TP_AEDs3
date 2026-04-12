@@ -1,13 +1,13 @@
 import java.util.*;
 
 import src.menus.Logado;
-import arquivos.ArquivoUsuario;
-import entidades.Usuario;
+import entidades.Usuario.ArquivoUsuario;
+import entidades.Usuario.Usuario;
 //import entidades.Curso;
 
 public class Principal {
     public static void main(String[] args)  throws Exception{
-        ArquivoUsuario arqUsuario = new ArquivoUsuario("usuarios.db");
+        ArquivoUsuario arqUsuario = new ArquivoUsuario("dados/usuario/usuarios.db");
 
         Scanner sc = new Scanner(System.in);
         int s = 0;

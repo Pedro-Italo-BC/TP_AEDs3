@@ -1,15 +1,17 @@
-package entidades;
+package entidades.Usuario;
 
 import java.io.*;
 
-public class Usuario {
+import aed3.InterfaceEntidade;
+
+public class Usuario implements InterfaceEntidade {
     private int idUsuario;
     private String nome;
     private String email;
     private String hashSenha;
     private String perguntaSecreta;
     private String hashRespostaSecreta;
-
+    
     public Usuario() {
     }
 
@@ -106,5 +108,13 @@ public class Usuario {
         hashSenha = dis.readUTF();
         perguntaSecreta = dis.readUTF();
         hashRespostaSecreta = dis.readUTF();
+    }
+
+    public int getID() {
+        return idUsuario;
+    }
+
+    public void setID(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 }

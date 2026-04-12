@@ -1,10 +1,11 @@
-package entidades;
+package entidades.Curso;
 
-import java.time.LocalDate;
+import aed3.InterfaceEntidade;
 import java.io.*;
+import java.time.LocalDate;
 import java.util.Random;
 
-public class Curso {
+public class Curso implements InterfaceEntidade {
 
     private int idCurso;
     private int idUsuario; // relacionamento 1:N
@@ -93,8 +94,14 @@ public class Curso {
     public void setEstado(int estado) {
         this.estado = estado;
     }
+    
+    public int getID() {
+        return this.idCurso;
+    }
 
-    // 🔹 SERIALIZAÇÃO
+    public void setID(int id) {
+        this.idCurso = id;
+    }
 
     public byte[] toByteArray() throws IOException {
         ByteArrayOutputStream ba = new ByteArrayOutputStream();
@@ -124,8 +131,6 @@ public class Curso {
         estado = dis.readInt();
     }
 
-    // 🔹 ToString (útil pro debug/menu)
-
     @Override
     public String toString() {
         return "\nID: " + idCurso +
@@ -136,4 +141,5 @@ public class Curso {
                "\nCódigo: " + codigo +
                "\nEstado: " + estado + "\n";
     }
+
 }

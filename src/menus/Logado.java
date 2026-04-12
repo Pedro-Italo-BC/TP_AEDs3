@@ -1,6 +1,6 @@
 package src.menus;
 import java.util.Scanner;
-import entidades.Usuario;
+import entidades.Usuario.Usuario;
 
 public class Logado {
     public static void menu(Usuario user) {
