@@ -7,14 +7,14 @@ import entidades.Usuario.Usuario;
 
 public class Principal {
     public static void main(String[] args)  throws Exception{
+        System.out.print("\033[H\033[2J");
         ArquivoUsuario arqUsuario = new ArquivoUsuario("dados/usuario/usuarios.db");
 
         Scanner sc = new Scanner(System.in);
-        int s = 0;
         String aux = "";
-        char opcao;
+        char opcao = 'O';
 
-        while (s == 0) {
+        while (opcao != 'S') {
             System.out.println("TP01 Aeds3");
             System.out.println("----------");
             System.out.println();
@@ -24,22 +24,35 @@ public class Principal {
             System.out.println("(S) Sair");
             System.out.println();
             System.out.print("Opção: ");
-            System.out.println();
 
             aux = sc.next();
             opcao = Character.toUpperCase(aux.charAt(0));
 
             // sair
             if (opcao == 'S') {
-                s = 1;
-                break;
+                System.out.println("Tem certeza que deseja sair? S/N");
+                char desejo = Character.toUpperCase(sc.next().charAt(0));
+                while(desejo != 'S' && desejo != 'N'){
+                    System.out.print("\033[H\033[2J");
+                    System.out.println("Opção Inválida");
+                    System.out.println("Tem certeza que deseja sair? S/N");
+                    desejo = Character.toUpperCase(sc.next().charAt(0));
+                }
+                if(desejo == 'N'){
+                    System.out.print("\033[H\033[2J");
+                    System.out.println("Cancelado");
+                    
+                    opcao = 'P';
+                }
             }
 
             // logar
             else if (opcao == 'A') {
+                System.out.print("\033[H\033[2J");
                 System.out.print("Digite seu email: ");
                 String email = sc.next();
-
+                
+                System.out.print("\033[H\033[2J");
                 System.out.print("Digite sua senha: ");
                 String senha = sc.next();
                 System.out.println();
@@ -50,6 +63,7 @@ public class Principal {
                     // próximo menu
                     Logado.menu(u);
                 } else {
+                    System.out.print("\033[H\033[2J");
                     System.out.println("Email ou senha inválidos.");
                 }
 
@@ -57,46 +71,53 @@ public class Principal {
 
             // cadastrar
             else if (opcao == 'B') {
-
-                System.out.print("Digite seu nome: ");
+                System.out.print("\033[H\033[2J"); 
+                System.out.print("Digite seu nome: "); //NOME
                 String nome = sc.next();
-                System.out.println();
+                System.out.print("\033[H\033[2J");
 
-                System.out.print("Digite seu email: ");
+                System.out.print("Digite seu email: "); //EMAIL
                 String email = sc.next();
-                System.out.println();
+                System.out.print("\033[H\033[2J");
 
-                System.out.print("Digite sua senha: ");
+                System.out.print("Digite sua senha: "); //SENHA 1
                 String senha1 = sc.next();
-                System.out.println();
+                System.out.print("\033[H\033[2J");
 
-                System.out.print("Confirme sua senha: ");
+                System.out.print("Confirme sua senha: "); //SENHA 2
                 String senha2 = sc.next();
-                System.out.println();
+                System.out.print("\033[H\033[2J");
 
-                while (!senha1.equals(senha2)) {
+                while (!senha1.equals(senha2)) {  //VERIFIÇÃO DE IGUALDADE DA SENHA
                     System.out.println("As senhas devem ser iguais. Digite novamente");
+                    System.out.print("Digite sua senha: ");
                     senha1 = sc.next();
-                    System.out.println();
+                    System.out.print("\033[H\033[2J");
+                    System.out.print("Digite sua senha novamente: ");
                     senha2 = sc.next();
-                    System.out.println();
+                    System.out.print("\033[H\033[2J");
                 }
 
-                System.out.print("Digite uma pergunta secreta: ");
+                System.out.print("Digite uma pergunta secreta: "); //PERGUNTA SECRETA
                 String perguntaSecreta = sc.next();
-                System.out.println();
+                System.out.print("\033[H\033[2J");
 
-                System.out.print("Digite a resposta da sua pergunta secreta: ");
-                System.out.println();
-                System.out.print("Observação: Você precisará dela caso esqueça sua senha! ");
+                System.out.print("Digite a resposta da sua pergunta secreta\n"); //RESPOSTA DA PERGUNTA SECRETA
+                System.out.print("Observação: Você precisará dela caso esqueça sua senha!:");
                 String respostaSecreta = sc.next();
-                System.out.println();
+                System.out.print("\033[H\033[2J");
 
                 System.out.print("Deseja confirmar seu cadastro? S/N: ");
-                char desejo2 = Character.toUpperCase(sc.next().charAt(0));
-                System.out.println();
+                char desejo = Character.toUpperCase(sc.next().charAt(0));
+                while(desejo != 'S' && desejo != 'N'){
+                    System.out.print("\033[H\033[2J");
+                    System.out.println("Opção inválida");
+                    System.out.print("Deseja confirmar seu cadastro? S/N: ");
+                    desejo = Character.toUpperCase(sc.next().charAt(0));
+                }
+                System.out.print("\033[H\033[2J");
 
-                if (desejo2 == 'S') {
+                if (desejo == 'S') {
                     Usuario novo = new Usuario(
                         0,
                         nome,
@@ -107,26 +128,27 @@ public class Principal {
                     );
                     arqUsuario.create(novo);
                     System.out.println("Cadastro realizado com sucesso!");
-                } else if (desejo2 == 'N') {
-                    continue;
+                } else if (desejo == 'N') {
+                    opcao = 'P';
                 }
 
             }
 
             else {
-                System.out.println("Opção Inválida. Deseja tentar novamente? S/N");
-                char desejo = Character.toUpperCase(sc.next().charAt(0));
-
-                if (desejo == 'S') {
-                    s = 0;
-                } else if (desejo == 'N') {
-                    s = 1;
-                    break;
-                } else {
+                char desejo = 'P';
+                while(desejo != 'N' && desejo != 'S'){
+                    System.out.print("\033[H\033[2J");
                     System.out.println("Opção Inválida");
-                    break;
+                    System.out.println("Deseja tentar novamente? S/N");
+                    desejo = Character.toUpperCase(sc.next().charAt(0));
+                }
+                if (desejo == 'N') {
+                    opcao = 'S';
+                }else{
+                    System.out.print("\033[H\033[2J");
                 }
             }
         }
+        System.out.print("\033[H\033[2J");
     }
 }
