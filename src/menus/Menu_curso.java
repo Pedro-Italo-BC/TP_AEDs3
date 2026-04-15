@@ -53,7 +53,7 @@ public class Menu_curso {
                 System.out.println();
                 System.out.print("Opção: ");
 
-                aux = sc.next();
+                aux = sc.nextLine();
                 opcao = Character.toUpperCase(aux.charAt(0));
 
                 if (opcao == 'R') {
@@ -62,16 +62,12 @@ public class Menu_curso {
                 }
 
                 else if (opcao == 'A') {
-
-                    sc.nextLine();
-
                     System.out.print("Digite o nome do curso: ");
                     String nome = sc.nextLine();
 
                     System.out.print("Digite a data de início (AAAA-MM-DD): ");
-                    String dataStr = sc.next();
+                    String dataStr = sc.nextLine();
                     LocalDate inicio = LocalDate.parse(dataStr);
-                    sc.nextLine();
 
                     System.out.print("Digite a descrição do curso: ");
                     String descricao = sc.nextLine();
@@ -121,10 +117,11 @@ public class Menu_curso {
                             System.out.println("(C) Encerrar inscrições");
                             System.out.println("(D) Concluir curso");
                             System.out.println("(E) Cancelar curso");
+                            System.out.println("(F) Deletar curso");
                             System.out.println("(R) Retornar");
 
                             System.out.print("Opção: ");
-                            char op2 = Character.toUpperCase(sc.next().charAt(0));
+                            char op2 = Character.toUpperCase(sc.nextLine().charAt(0));
 
                             if (op2 == 'R') {
                                 voltar = 1;
@@ -165,7 +162,12 @@ public class Menu_curso {
 
                             else if (op2 == 'E') {
                                 c.setEstado(3);
-                                if(!c.hasAluno() && c.getEstado() != 2 && c.getEstado() != 3 && c.getEstado() != 4)
+                                if(!c.hasAluno())
+                                    arqCurso.update(c);
+                                else
+                                    m = 3;
+                            } else if (op2 == 'F') {
+                                if(!c.hasAluno())
                                     arqCurso.delete(c.getID());
                                 else
                                     m = 3;

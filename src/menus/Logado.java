@@ -1,10 +1,12 @@
 package src.menus;
-import java.util.Scanner;
+import entidades.Usuario.ArquivoUsuario;
 import entidades.Usuario.Usuario;
+import java.util.Scanner;
 
 public class Logado {
-    public static void menu(Usuario user) {
+    public static void menu(Usuario user) throws Exception {
         Scanner sc = new Scanner(System.in);
+        ArquivoUsuario arqUser = new ArquivoUsuario();
 
         int s = 0;
         String aux = "";
@@ -18,13 +20,15 @@ public class Logado {
             System.out.println("(A) Meus dados");
             System.out.println("(B) Meus cursos");
             System.out.println("(C) Minhas inscrições");
+            System.out.println("(D) Deletar conta");
+            System.out.println("(E) Editar informações");
             System.out.println();
             System.out.println("(S) Sair");
             System.out.println();
             System.out.print("Opção: ");
             System.out.println();
 
-            aux = sc.next();
+            aux = sc.nextLine();
             opcao = Character.toUpperCase(aux.charAt(0));
 
             // sair
@@ -45,7 +49,7 @@ public class Logado {
                 System.out.println();
 
                 System.out.println("Pressione qualquer tecla para voltar...");
-                sc.next();
+                sc.nextLine();
             }
 
             // meus cursos
@@ -58,9 +62,64 @@ public class Logado {
                 System.out.println("Funcionalidade ainda não implementada.");
             }
 
+            else if(opcao == 'D') {
+                System.out.println("Tem certeza que deseja deletar sua conta? [S/n]");
+                String resp = sc.nextLine();
+
+                if(resp.toLowerCase().charAt(0) == 's') {
+                    arqUser.delete(user.getID());
+                }
+                s=1;
+            } else if(opcao == 'E') {
+                System.out.print("Digite seu nome: "); //NOME
+                user.setNome(sc.nextLine());
+
+                System.out.print("Digite seu email: "); //EMAIL
+                user.setEmail(sc.nextLine());
+
+
+                System.out.print("Digite sua senha: "); //SENHA 1
+                String senha1 = sc.nextLine();
+
+                System.out.print("Confirme sua senha: "); //SENHA 2
+                String senha2 = sc.nextLine();
+
+                while (!senha1.equals(senha2)) {  //VERIFIÇÃO DE IGUALDADE DA SENHA
+                    System.out.println("As senhas devem ser iguais. Digite novamente");
+                    System.out.print("Digite sua senha: ");
+                    senha1 = sc.nextLine();
+                    System.out.print("Digite sua senha novamente: ");
+                    senha2 = sc.nextLine();
+                }
+
+                user.setHashSenha(Usuario.gerarHash(senha1));
+
+                System.out.print("Digite uma pergunta secreta: "); //PERGUNTA SECRETA
+                user.setPerguntaSecreta(sc.nextLine());
+                
+
+                System.out.print("Digite a resposta da sua pergunta secreta\n"); //RESPOSTA DA PERGUNTA SECRETA
+                System.out.print("Observação: Você precisará dela caso esqueça sua senha!:");
+                user.setHashRespostaSecreta(Usuario.gerarHash(sc.nextLine()));
+
+
+                System.out.print("Deseja confirmar sua edição? S/N: ");
+                char desejo = Character.toUpperCase(sc.nextLine().charAt(0));
+                while(desejo != 'S' && desejo != 'N'){
+                    System.out.println("Opção inválida");
+                    System.out.print("Deseja confirmar seu cadastro? S/N: ");
+                    desejo = Character.toUpperCase(sc.nextLine().charAt(0));
+                }
+                
+
+                if (desejo == 'S') {
+                        arqUser.update(user);
+                        System.out.println("Edição realizado com sucesso!");
+                }
+            }
             else {
                 System.out.println("Opção Inválida. Deseja tentar novamente? S/N");
-                char desejo = Character.toUpperCase(sc.next().charAt(0));
+                char desejo = Character.toUpperCase(sc.nextLine().charAt(0));
 
                 if (desejo == 'S') {
                     s = 0;

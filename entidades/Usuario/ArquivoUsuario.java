@@ -1,15 +1,14 @@
 package entidades.Usuario;
 
 import aed3.*;
-import java.io.*;
+import entidades.Curso.ArquivoCurso;
 
 public class ArquivoUsuario extends Arquivo<Usuario> {
     
-    RandomAccessFile arq;
     HashExtensivel<ParEmailId> indiceEmail;
     final int TAM_CABECALHO = 4;
 
-    public ArquivoUsuario(String nomeArquivo) throws Exception {
+    public ArquivoUsuario() throws Exception {
         super("usuario", Usuario.class.getConstructor());
         
     
@@ -30,6 +29,45 @@ public class ArquivoUsuario extends Arquivo<Usuario> {
     }
 
     // LOGIN (busca sequencial por enquanto)
+    public Usuario encontrarPorEmailSafe(String email) throws Exception {
+        ParEmailId pei = indiceEmail.read(Math.abs(email.hashCode()));
+        Usuario usuarioEncontrado = null;
+
+        if(pei != null && pei.getEmail().equals(email)) {
+            usuarioEncontrado = read(pei.getId());
+        }
+
+        usuarioEncontrado.setHashSenha(null);
+        usuarioEncontrado.setHashRespostaSecreta(null);
+    
+        return usuarioEncontrado; 
+    } 
+
+    public Usuario encontrarPorEmailUnsafe(String email) throws Exception {
+        ParEmailId pei = indiceEmail.read(Math.abs(email.hashCode()));
+        Usuario usuarioEncontrado = null;
+
+        if(pei != null && pei.getEmail().equals(email)) {
+            usuarioEncontrado = read(pei.getId());
+        }
+
+        return usuarioEncontrado; 
+    } 
+
+      public boolean responderPergunta(Usuario user, String resposta) {
+        boolean resp = false;
+        try {
+            if(user.getHashRespostaSecreta().equals(Usuario.gerarHash(resposta))) {
+                resp = true;
+            }
+        } catch (Exception e) {
+            System.out.println("Olha, usuário não encontrado.");
+        }
+
+        return resp;
+    }
+
+
     public Usuario login(String email, String senha) throws Exception {
         ParEmailId pei = indiceEmail.read(Math.abs(email.hashCode()));
         
@@ -46,81 +84,19 @@ public class ArquivoUsuario extends Arquivo<Usuario> {
 
         return null;
     }
-    //READ
-    // public Usuario read(int id) throws Exception {
-    //     arq.seek(TAM_CABECALHO);
 
-    //     while (arq.getFilePointer() < arq.length()) {
-
-    //         byte lapide = arq.readByte();
-    //         short tam = arq.readShort();
-
-    //         if (lapide != '*') {
-    //             byte[] ba = new byte[tam];
-    //             arq.readFully(ba);
-
-    //             Usuario u = new Usuario();
-    //             u.fromByteArray(ba);
-
-    //             if (u.getIdUsuario() == id) {
-    //                 return u;
-    //             }
-
-    //         } else {
-    //             arq.skipBytes(tam);
-    //         }
-    //     }
-
-    //     return null;
-    // }
-
-    //Update
-    /*public boolean update(Usuario novo) throws Exception {
-        arq.seek(TAM_CABECALHO);
-
-        while (arq.getFilePointer() < arq.length()) {
-
-            long pos = arq.getFilePointer();
-
-            byte lapide = arq.readByte();
-            short tam = arq.readShort();
-
-            if (lapide != '*') {
-
-                byte[] ba = new byte[tam];
-                arq.readFully(ba);
-
-                Usuario atual = new Usuario();
-                atual.fromByteArray(ba);
-
-                if (atual.getIdUsuario() == novo.getIdUsuario()) {
-
-                    byte[] novoBa = novo.toByteArray();
-
-                    if (novoBa.length <= tam) {
-                        // sobrescreve no mesmo espaço
-                        arq.seek(pos + 3); // pula lápide + tamanho
-                        arq.write(novoBa);
-                    } else {
-                        // marca antigo como deletado
-                        arq.seek(pos);
-                        arq.writeByte('*');
-
-                        // escreve no final
-                        arq.seek(arq.length());
-                        arq.writeByte(' ');
-                        arq.writeShort(novoBa.length);
-                        arq.write(novoBa);
-                    }
-
-                    return true;
-                }
-
-            } else {
-                arq.skipBytes(tam);
+    public boolean delete(int id) throws Exception {
+        Usuario u = read(id);
+        if(u != null) {
+            if(super.delete(id)) {
+                ArquivoCurso arqCurso = new ArquivoCurso();
+                arqCurso.deleteTudoPorUsuario(id);
+                indiceEmail.delete(Math.abs(u.getEmail().hashCode()));
+                super.delete(id);
+                return true;
             }
         }
 
         return false;
-    }*/
+    }
 }
